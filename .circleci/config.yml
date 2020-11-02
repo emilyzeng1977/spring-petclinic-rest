@@ -21,3 +21,13 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
+      - run:
+          name: Install AWS CLI
+          command: |
+            curl -O https://bootstrap.pypa.io/get-pip.py
+            python get-pip.py --user
+            pip install awscli --user
+
+      - run:
+          name: AWS CLI Test
+          command: aws s3 ls
