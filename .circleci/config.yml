@@ -11,8 +11,26 @@ jobs:
       - image: 'maven:3.6-jdk-8-openj9'
     steps:
       - checkout
-      - run: mkdir bucket && echo "lorem ipsum" > bucket/build_asset.txt
-      - aws-s3/copy:
-        #  arguments: '--dryrun'
-          from: bucket/build_asset.txt
-          to: 's3://tom.niu16'
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+      - run: mvn -U clean package verify
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - target/
+  deploy:
+    docker:
+      - image: 'cimg/python:3.6'
+      steps:
+        - checkout
+        - attach_workspace:
+            at: ./target
+        - aws-s3/copy:
+            #  arguments: '--dryrun'
+            from: ./target/*.jar
+            to: 's3://tom.niu16'
