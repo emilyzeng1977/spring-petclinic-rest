@@ -3,6 +3,8 @@
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
 version: 2
+orbs:
+  aws-s3: circleci/aws-s3@2.0.0
 jobs:
   build:
     docker:
@@ -15,13 +17,13 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
-      - run: mvn -U clean package verify
-      - run:
-          name: install awscli
-          command: apt-get update && apt-get -y install awscli
-      - run: aws s3 ls
+    #  - run: mvn -U clean package verify
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-
+      - run: mkdir bucket && echo "lorem ipsum" > bucket/build_asset.txt
+      - aws-s3/copy:
+          arguments: '--dryrun'
+          from: bucket/build_asset.txt
+          to: 's3://tom.niu16'
