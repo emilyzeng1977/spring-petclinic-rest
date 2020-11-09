@@ -2,26 +2,42 @@
 #
 # Check https://circleci.com/docs/2.0/language-php/ for more details
 #
-version: 2
+version: 2.1
+orbs:
+  aws-s3: circleci/aws-s3@2.0.0
 jobs:
   build:
     docker:
-      - image: maven:3.6-jdk-8-openj9
-
-    working_directory: ~/repo
-
+      - image: 'maven:3.6-jdk-8-openj9'
     steps:
       - checkout
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
       - run: mvn -U clean package verify
-      - run:
-          name: install awscli
-          command: apt-get update && apt-get -y install awscli
-      - run: aws s3 ls
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-
+      - persist_to_workspace:
+          root: .
+          paths:
+            - target/
+  deploy:
+    docker:
+      - image: 'cimg/python:3.6'
+    steps:
+      - checkout
+      - attach_workspace:
+            at: .
+      - aws-s3/copy:
+          from: ./target/*.jar
+          # spring-petclinic-rest-2.2.5
+          to: 's3://tom.niu16'
+workflows:
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
