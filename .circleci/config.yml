@@ -29,9 +29,9 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-            at: ./target
+            at: .
       - aws-s3/copy:
-          from: ./target/target/*.jar
+          from: ./target/*.jar
           # spring-petclinic-rest-2.2.5
           to: 's3://tom.niu16'
 workflows:
