@@ -33,7 +33,7 @@ jobs:
       - run: mv ./target/spring-petclinic-rest-2.2.5.jar ./target/2020110901-spring-petclinic-rest-2.2.5.jar
       - aws-s3/copy:
           from: ./target/*.jar
-          to: 's3://s3://elasticbeanstalk-ap-southeast-2-526394010273'
+          to: 's3://elasticbeanstalk-ap-southeast-2-526394010273'
 workflows:
   build_and_deploy:
     jobs:
