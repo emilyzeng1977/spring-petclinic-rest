@@ -30,10 +30,10 @@ jobs:
       - checkout
       - attach_workspace:
             at: .
-      - run: mv ./target/spring-petclinic-rest-2.2.5.jar ./target/2020110901-spring-petclinic-rest-2.2.5.jar
+      #- run: mv ./target/spring-petclinic-rest-2.2.5.jar ./target/2020110901-spring-petclinic-rest-2.2.5.jar
       - aws-s3/copy:
-          from: ./target/*.jar
-          to: 's3://elasticbeanstalk-ap-southeast-2-526394010273'
+          from: ./target/spring-petclinic-rest-2.2.5.jar
+          to: 's3://elasticbeanstalk-ap-southeast-2-526394010273/2020110902-spring-petclinic-rest-2.2.5.jar'
 workflows:
   build_and_deploy:
     jobs:
