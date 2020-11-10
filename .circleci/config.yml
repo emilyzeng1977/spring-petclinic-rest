@@ -5,6 +5,7 @@
 version: 2.1
 orbs:
   aws-s3: circleci/aws-s3@2.0.0
+  aws-cli: circleci/aws-cli@1.3.0
 jobs:
   build:
     docker:
@@ -34,10 +35,13 @@ jobs:
       - aws-s3/copy:
           from: ./target/spring-petclinic-rest-2.2.5.jar
           to: 's3://elasticbeanstalk-ap-southeast-2-526394010273/2020110902-spring-petclinic-rest-2.2.5.jar'
+  test:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup:
+      - run: aws s3 ls
 workflows:
   build_and_deploy:
     jobs:
-      - build
-      - deploy:
-          requires:
-            - build
+      - test
