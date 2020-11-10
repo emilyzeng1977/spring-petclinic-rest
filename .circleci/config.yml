@@ -39,8 +39,6 @@ jobs:
     docker:
       - image: 'amazon/aws-cli:latest'
     steps:
-      - setup_remote_docker:
-            docker_layer_caching: true
       - run:
           name: aws s3 ls
 workflows:
