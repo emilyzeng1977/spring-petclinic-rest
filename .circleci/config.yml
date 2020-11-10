@@ -36,9 +36,9 @@ jobs:
           from: ./target/spring-petclinic-rest-2.2.5.jar
           to: 's3://elasticbeanstalk-ap-southeast-2-526394010273/2020110902-spring-petclinic-rest-2.2.5.jar'
   awstest:
-    executor: aws-cli/default
+    docker:
+      - image: 'amazon/aws-cli:latest'
     steps:
-      - aws-cli/setup
       - run:
           name: Check installed AWS CLI version
           command: |
