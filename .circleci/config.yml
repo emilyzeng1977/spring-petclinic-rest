@@ -16,6 +16,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
       - run: mvn -U clean package verify
+      - run: echo $(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
       - save_cache:
           paths:
             - ~/.m2
@@ -40,12 +41,9 @@ jobs:
       - image: 'amazon/aws-cli:latest'
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run: docker build .
       - run: aws s3 ls
 
 workflows:
   build_and_deploy:
     jobs:
-      - awstest
+      - build
