@@ -39,6 +39,8 @@ jobs:
     executor: aws-cli/default
     steps:
       - checkout
+      - aws-cli/setup:
+          profile-name: example
       - run: aws s3 ls
 workflows:
   build_and_deploy:
