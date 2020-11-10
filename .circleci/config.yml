@@ -36,11 +36,20 @@ jobs:
           from: ./target/spring-petclinic-rest-2.2.5.jar
           to: 's3://elasticbeanstalk-ap-southeast-2-526394010273/2020110902-spring-petclinic-rest-2.2.5.jar'
   awstest:
-    executor: aws-cli/default
+    executor: aws-cli
     steps:
-      - checkout
       - aws-cli/setup
-      - run: aws s3 ls
+      - run:
+          name: Check installed AWS CLI version
+          command: |
+            which aws
+            echo $(aws --version)
+            if ! echo "$(aws --version)" | grep -q "(aws-cli/2)"; then
+                echo "Version 2 installed successfully."
+            else
+                echo "Incorrect version installed"
+                exit 1
+            fi
 workflows:
   build_and_deploy:
     jobs:
