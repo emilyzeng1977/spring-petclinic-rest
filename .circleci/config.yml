@@ -36,7 +36,7 @@ jobs:
           from: ./target/spring-petclinic-rest-2.2.5.jar
           to: 's3://elasticbeanstalk-ap-southeast-2-526394010273/2020110902-spring-petclinic-rest-2.2.5.jar'
   awstest:
-    executor: aws-cli
+    executor: aws-cli/default
     steps:
       - aws-cli/setup
       - run:
