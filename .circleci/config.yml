@@ -39,8 +39,8 @@ jobs:
     docker:
       - image: 'amazon/aws-cli:latest'
     steps:
-      - run:
-          name: aws s3 ls
+      - run: aws s3 ls
+
 workflows:
   build_and_deploy:
     jobs:
