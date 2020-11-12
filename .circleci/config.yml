@@ -5,7 +5,6 @@
 version: 2.1
 orbs:
   aws-s3: circleci/aws-s3@2.0.0
-  aws-cli: circleci/aws-cli@1.3.0
 jobs:
   build:
     docker:
@@ -16,7 +15,6 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
       - run: mvn -U clean package verify
-      - run: echo $(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
       - save_cache:
           paths:
             - ~/.m2
@@ -25,28 +23,31 @@ jobs:
           root: .
           paths:
             - target/
-  uploadJarToS3:
+  deploy:
     docker:
       - image: 'cimg/python:3.6'
     steps:
       - checkout
       - attach_workspace:
             at: .
-      #- run: mv ./target/spring-petclinic-rest-2.2.5.jar ./target/2020110901-spring-petclinic-rest-2.2.5.jar
       - aws-s3/copy:
-          from: ./target/spring-petclinic-rest-2.2.5.jar
-          to: 's3://elasticbeanstalk-ap-southeast-2-526394010273/2020110902-spring-petclinic-rest-2.2.5.jar'
-  deploy:
+          from: ./target/*.jar
+          # spring-petclinic-rest-2.2.5
+          to: 's3://tom.niu16'
+  deploy_backend:
     docker:
       - image: 'amazon/aws-cli:latest'
     steps:
       - checkout
-      - run: aws s3 ls
-
+      - run: aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label petclinic_2020111202 --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
+      - run: aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label petclinic_2020111202
 workflows:
   build_and_deploy:
     jobs:
-      - build
-      - uploadJarToS3:
-          requires:
-            - build
+      #- build
+      #- deploy:
+       #   requires:
+        #    - build
+      - deploy_backend
+         # requires:
+          #  - deploy
