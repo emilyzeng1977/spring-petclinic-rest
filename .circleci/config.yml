@@ -44,10 +44,10 @@ jobs:
 workflows:
   build_and_deploy:
     jobs:
-      #- build
-      #- deploy:
-       #   requires:
-        #    - build
+      - build
+      - deploy:
+          requires:
+            - build
       - deploy_backend
-         # requires:
-          #  - deploy
+          requires:
+            - deploy
