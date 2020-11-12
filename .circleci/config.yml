@@ -39,15 +39,15 @@ jobs:
       - image: 'amazon/aws-cli:latest'
     steps:
       - checkout
-      - run: aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label petclinic_20201112 --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
-      - run: aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label petclinic_20201112
+      - run: aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label petclinic_2020111202 --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
+      - run: aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label petclinic_2020111202
 workflows:
   build_and_deploy:
     jobs:
-      - build
-      - deploy:
-          requires:
-            - build
+      #- build
+      #- deploy:
+       #   requires:
+        #    - build
       - deploy_backend:
-          requires:
-            - deploy
+         # requires:
+          #  - deploy
