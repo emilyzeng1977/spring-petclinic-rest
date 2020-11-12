@@ -48,6 +48,6 @@ workflows:
       - deploy:
           requires:
             - build
-      - deploy_backend
+      - deploy_backend:
           requires:
             - deploy
