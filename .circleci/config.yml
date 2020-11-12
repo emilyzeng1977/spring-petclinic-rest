@@ -39,7 +39,9 @@ jobs:
       - image: 'amazon/aws-cli:latest'
     steps:
       - checkout
-      - run: aws s3 ls
+      - attach_workspace:
+          at: .
+      - run: aws s3 cp ./target/*.jar s3://tom.niu16/my-app-1.jar
 workflows:
   build_and_deploy:
     jobs:
