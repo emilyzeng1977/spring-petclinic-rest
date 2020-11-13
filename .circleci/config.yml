@@ -41,8 +41,11 @@ jobs:
       - checkout
       - run: echo 'export version=1.0-`date +"%Y%m%d-%H%M%S"`' >> $BASH_ENV
       - run: echo ${version}
-      - run: aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
-      - run: aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label ${version}
+      - run: echo 'export app_version=${version}' >> $BASH_ENV
+      - run: echo $app_version
+      - run: aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${app_version} --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
+      - run: echo $app_version)
+      - run: aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label ${app_version}
 workflows:
   build_and_deploy:
     jobs:
