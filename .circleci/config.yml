@@ -39,7 +39,7 @@ jobs:
       - image: 'amazon/aws-cli:latest'
     steps:
       - checkout
-      - run: echo 1.0-`date +"%Y%m%d-%H%M%S"` >> ${version}
+      - run: echo 'export version=1.0-`date +"%Y%m%d-%H%M%S"`' >> $BASH_ENV
       - run: echo ${version}
       - run: aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
       - run: aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label ${version}
