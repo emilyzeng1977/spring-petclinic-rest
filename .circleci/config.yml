@@ -1,0 +1,27 @@
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      - image: maven:3.6-jdk-8-openj9
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+      - run: mvn -U clean package verify
+      - run:
+          name: install awscli
+          command: apt-get update && apt-get -y install awscli
+      - run: aws s3 ls
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+
