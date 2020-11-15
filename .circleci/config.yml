@@ -40,11 +40,12 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Export enviranment variable version and create version
-        command: export version=1.0-`date +"%Y%m%d-%H%M%S"`
-          echo ${version}
-          aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
-          aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label ${version}
+          name: Export enviranment variable version and create version
+          command: |
+            export version=1.0-`date +"%Y%m%d-%H%M%S"`
+            echo ${version}
+            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
+            aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label ${version}
 workflows:
   build_and_deploy:
     jobs:
