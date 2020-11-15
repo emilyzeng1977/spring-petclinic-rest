@@ -15,6 +15,8 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
       - run: mvn -U clean package verify
+      - run:
+          command: export arct_id=abc123 | echo $arct_id
       - save_cache:
           paths:
             - ~/.m2
@@ -43,7 +45,6 @@ jobs:
           name: Export enviranment variable version and create version
           command: |
             export version=1.0-`date +"%Y%m%d-%H%M%S"`
-            echo ${version}
             aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
             aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label ${version}
 workflows:
