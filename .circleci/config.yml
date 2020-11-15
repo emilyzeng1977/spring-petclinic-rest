@@ -15,8 +15,8 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
       - run: mvn -U clean package verify
-      - run:
-          command: export arct_id=abc123 | echo $arct_id
+      - run: echo 'export arct_id=abc123' >> $BASH_ENV
+      - run: echo ${arct_id}
       - save_cache:
           paths:
             - ~/.m2
