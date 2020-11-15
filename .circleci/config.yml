@@ -41,6 +41,7 @@ jobs:
       - image: 'amazon/aws-cli:latest'
     steps:
       - checkout
+      - run: echo ${arct_id}
       - run:
           name: Export enviranment variable version and create version
           command: |
