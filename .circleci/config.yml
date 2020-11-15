@@ -33,6 +33,7 @@ jobs:
       - image: 'cimg/python:3.6'
     steps:
       - checkout
+      - run: echo ${arct_id}
       - attach_workspace:
             at: .
       - aws-s3/copy:
