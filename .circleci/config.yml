@@ -15,7 +15,10 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
       - run: mvn -U clean package verify
-      - run: echo 'export arct_id=abc123' >> $BASH_ENV
+      - run:
+          command: |
+            arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
+            echo "export arct_id=${arct_val}" >> $BASH_ENV
       - run: echo ${arct_id}
       - save_cache:
           paths:
