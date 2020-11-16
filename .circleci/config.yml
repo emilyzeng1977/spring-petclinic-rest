@@ -52,7 +52,7 @@ jobs:
             sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
             yum install -y apache-maven
             yum install -y java-1.8.0-openjdk
-            export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.265.b01-1.amzn2.0.1.x86_64/jre/
+            export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.265.b01-1.amzn2.0.1.x86_64/jre/ >> $BASE_ENV
             echo $JAVA_HOME
             mvn --version
       - run: mvn --version
