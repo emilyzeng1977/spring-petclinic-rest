@@ -18,8 +18,8 @@ jobs:
       - run:
           command: |
             arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
-            echo "export arct_id=${arct_val}" >> $BASH_ENV
-      - run: echo ${arct_id}
+            echo "export arct_id=${arct_val}" >> ~/.m2/version.txt
+      - run: cat ~/.m2/version.txt
       - save_cache:
           paths:
             - ~/.m2
