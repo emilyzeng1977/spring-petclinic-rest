@@ -52,13 +52,16 @@ jobs:
             sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
             yum install -y apache-maven
             yum install -y java-1.8.0-openjdk
-            echo "export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.265.b01-1.amzn2.0.1.x86_64/jre/" >> $BASE_ENV
-      - run: mvn --version
+
       - run:
           name: Export enviranment variable version and create version
           command: |
+            export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.265.b01-1.amzn2.0.1.x86_64/jre/
+            mvn --version
+            arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
+            echo $arct_val
             export version=1.0-`date +"%Y%m%d-%H%M%S"`
-            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu16",S3Key="spring-petclinic-rest-2.2.5.jar"
+            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu16",S3Key="${arct_val}-2.2.5.jar"
             aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label ${version}
 workflows:
   build_and_deploy:
