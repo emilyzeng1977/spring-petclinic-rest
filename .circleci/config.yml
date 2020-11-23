@@ -48,6 +48,7 @@ jobs:
       - checkout
       - attach_workspace:
           at: .
+      - aws-cli/setup
       - run:
           name: Export enviranment variable version and create version
           command: |
