@@ -50,19 +50,19 @@ jobs:
           at: .
       - aws-cli/setup
       - run:
-          name: Export enviranment variable version and create version
+          name: deploy jar to elasticbeanstalk
           command: |
             jar_name=`cat ./target/version.txt`
             version=1.0-`date +"%Y%m%d-%H%M%S"`
+            echo $jar_name
+            echo ${version}
+            aws s3 cp ./target/${jar_name} s3://tom.niu19/${jar_name}
             aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu19",S3Key=${jar_name}
             aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-19-petclinic-dev --version-label ${version}
 workflows:
   build_and_deploy:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
       - deploy_backend:
           requires:
-            - deploy
+            - build
