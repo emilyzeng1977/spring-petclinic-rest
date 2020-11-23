@@ -19,7 +19,8 @@ jobs:
       - run:
           command: |
             arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
-            echo ${arct_val} >> ./target/version.txt
+            version_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout`
+            echo ${arct_val}-${version_val} >> ./target/version.txt
       - save_cache:
           paths:
             - ~/.m2
@@ -28,17 +29,6 @@ jobs:
           root: .
           paths:
             - target/
-
-  deploy_bk:
-    executor: aws-cli/default
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - aws-cli/setup
-      - run:
-          command: |
-            cat ./target/version.txt
 
   deploy:
     docker:
@@ -51,28 +41,27 @@ jobs:
           from: ./target/*.jar
           # spring-petclinic-rest-2.2.5
           to: 's3://tom.niu19'
+
   deploy_backend:
-    docker:
-      - image: 'amazon/aws-cli:latest'
+    executor: aws-cli/default
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - run:
           name: Export enviranment variable version and create version
           command: |
-            export version=1.0-`date +"%Y%m%d-%H%M%S"`
-            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu19",S3Key="spring-petclinic-rest-2.2.5.jar"
+            jar_name=`cat ./target/version.txt`
+            version=1.0-`date +"%Y%m%d-%H%M%S"`
+            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu19",S3Key=${jar_name}
             aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-19-petclinic-dev --version-label ${version}
 workflows:
   build_and_deploy:
     jobs:
       - build
-      - deploy_bk:
+      - deploy:
           requires:
             - build
- #     - build
- #     - deploy:
- #         requires:
- #           - build
- #     - deploy_backend:
- #         requires:
- #           - deploy
+      - deploy_backend:
+          requires:
+            - deploy
