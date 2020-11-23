@@ -29,19 +29,6 @@ jobs:
           root: .
           paths:
             - target/
-
-  deploy:
-    docker:
-      - image: 'cimg/python:3.6'
-    steps:
-      - checkout
-      - attach_workspace:
-            at: .
-      - aws-s3/copy:
-          from: ./target/*.jar
-          # spring-petclinic-rest-2.2.5
-          to: 's3://tom.niu19'
-
   deploy_backend:
     executor: aws-cli/default
     steps:
@@ -54,10 +41,10 @@ jobs:
           command: |
             jar_name=`cat ./target/version.txt`
             version=1.0-`date +"%Y%m%d-%H%M%S"`
-            echo $jar_name
-            echo ${version}
-            aws s3 cp ./target/${jar_name} s3://tom.niu19/${jar_name}
-            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu19",S3Key=${jar_name}
+            version_jar_name=${version}-${jar_name}
+            echo ${version_jar_name}
+            aws s3 cp ./target/${jar_name} s3://${AWS_JAR_S3}/${version_jar_name}
+            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket=${AWS_JAR_S3},S3Key=${version_jar_name}
             aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-19-petclinic-dev --version-label ${version}
 workflows:
   build_and_deploy:
