@@ -19,7 +19,8 @@ jobs:
           command: |
             arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
             echo ${arct_val} >> $CIRCLE_ARTIFACTS/version.txt
-            cp ./target/*.jar $CIRCLE_ARTIFACTS
+            mkdir $CIRCLE_ARTIFACTS/jar
+            cp ./target/*.jar $CIRCLE_ARTIFACTS/jar/
       - save_cache:
           paths:
             - ~/.m2
