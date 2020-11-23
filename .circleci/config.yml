@@ -18,8 +18,8 @@ jobs:
       - run:
           command: |
             arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
-            echo "export arct_id=${arct_val}" >> ~/.m2/version.txt
-      - run: cat ~/.m2/version.txt
+            echo ${arct_val} >> $CIRCLE_ARTIFACTS/version.txt
+            cp ./target/*.jar $CIRCLE_ARTIFACTS
       - save_cache:
           paths:
             - ~/.m2
@@ -54,9 +54,9 @@ workflows:
   build_and_deploy:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
-      - deploy_backend:
-          requires:
-            - deploy
+ #     - deploy:
+ #         requires:
+ #           - build
+ #     - deploy_backend:
+ #         requires:
+ #           - deploy
