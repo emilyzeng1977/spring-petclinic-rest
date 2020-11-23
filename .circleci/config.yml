@@ -20,7 +20,7 @@ jobs:
           command: |
             arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
             version_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout`
-            echo ${arct_val}-${version_val} >> ./target/version.txt
+            echo ${arct_val}-${version_val}.jar >> ./target/version.txt
       - save_cache:
           paths:
             - ~/.m2
