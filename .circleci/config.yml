@@ -40,7 +40,7 @@ jobs:
           command: |
             jar-name=`cat ./target/version.txt`
             version=1.0-`date +"%Y%m%d-%H%M%S"`
-            jar-name-version="$version-$jar-name"
+            jar-name-version="${version}-${jar-name}"
             aws s3 cp ./target/${jar-name}.jar s3://s3bucket/${jar-name-version}.jar
             aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket=${s3bucket},S3Key="${jar-name-version}.jar"
             aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-19-petclinic-dev --version-label ${version}
