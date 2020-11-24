@@ -20,10 +20,6 @@ jobs:
             arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
             arct_version=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout`
             echo ${arct_val}-${arct_version} >> ./target/version.txt
-      - run: |
-          jar-name=`cat ~/target/version.txt`
-          version=1.0-`date +"%Y%m%d-%H%M%S"`
-          jar-name-version="$version-$jar-name"
       - save_cache:
           paths:
             - ~/.m2
