@@ -45,7 +45,7 @@ jobs:
             jar-name-version="$version-$jar-name"
             aws s3 cp ~/target/${jar-name}.jar s3://s3bucket/${jar-name-version}.jar
             aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket=${s3bucket},S3Key="${jar-name-version}.jar"
-            aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label ${version}
+            aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-19-petclinic-dev --version-label ${version}
       - attach_workspace:
             at: .
 workflows:
