@@ -38,11 +38,11 @@ jobs:
       - run:
           name: Export enviranment variable version and create version
           command: |
-            jar-name=`cat ./target/version.txt`
+            jar_name=`cat ./project/target/version.txt`
             version=1.0-`date +"%Y%m%d-%H%M%S"`
-            jar-name-version="${version}-${jar-name}"
-            aws s3 cp ./target/${jar-name}.jar s3://s3bucket/${jar-name-version}.jar
-            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket=${s3bucket},S3Key="${jar-name-version}.jar"
+            jar_name_version="${version}-${jar_name}"
+            aws s3 cp ./target/${jar_name}.jar s3://${AWS_JAR_S3}/${jar_name_version}.jar
+            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket=${AWS_JAR_S3},S3Key="${jar_name_version}.jar"
             aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-19-petclinic-dev --version-label ${version}
 
 workflows:
