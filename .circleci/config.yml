@@ -18,8 +18,12 @@ jobs:
       - run:
           command: |
             arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
-            echo "export arct_id=${arct_val}" >> ~/.m2/version.txt
-      - run: cat ~/.m2/version.txt
+            arct_version=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout`
+            echo ${arct_val}-${arct_version} >> ~/target/version.txt
+      - run: |
+          jar-name=`cat ~/target/version.txt`
+          version=1.0-`date +"%Y%m%d-%H%M%S"`
+          jar-name-version="$version-$jar-name"
       - save_cache:
           paths:
             - ~/.m2
@@ -28,48 +32,26 @@ jobs:
           root: .
           paths:
             - target/
-  deploy:
-    docker:
-      - image: 'cimg/python:3.6'
-    steps:
-      - checkout
-      - run: echo ${arct_id}
-      - attach_workspace:
-            at: .
-      - aws-s3/copy:
-          from: ./target/*.jar
-          # spring-petclinic-rest-2.2.5
-          to: 's3://tom.niu16'
   deploy_backend:
     docker:
-      - image: 'amazon/aws-cli:latest'
+      - image: 'aws-cli: circleci/aws-cli@1.3.1'
     steps:
       - checkout
-      - run:
-          command: |
-            yum install -y wget
-            wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
-            sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
-            yum install -y apache-maven
-            yum install -y java-1.8.0-openjdk
-
       - run:
           name: Export enviranment variable version and create version
           command: |
-            export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.265.b01-1.amzn2.0.1.x86_64/jre/
-            mvn --version
-            arct_val=`mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.artifactId -q -DforceStdout`
-            echo $arct_val
-            export version=1.0-`date +"%Y%m%d-%H%M%S"`
-            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket="tom.niu16",S3Key="${arct_val}-2.2.5.jar"
+            jar-name=`cat ~/target/version.txt`
+            version=1.0-`date +"%Y%m%d-%H%M%S"`
+            jar-name-version="$version-$jar-name"
+            aws s3 cp ~/target/${jar-name}.jar s3://s3bucket/${jar-name-version}.jar
+            aws elasticbeanstalk create-application-version --application-name digihealth-petclinic --version-label ${version} --source-bundle S3Bucket=${s3bucket},S3Key="${jar-name-version}.jar"
             aws elasticbeanstalk update-environment --application-name digihealth-petclinic --environment-name digihealth-petclinic-dev --version-label ${version}
+      - attach_workspace:
+            at: .
 workflows:
   build_and_deploy:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
       - deploy_backend:
           requires:
-            - deploy
+            - build
